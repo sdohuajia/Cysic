@@ -44,14 +44,14 @@ function deploy_cysic_node() {
     echo "升级已安装的软件包..."
     apt upgrade -y
 
-    # 安装 Cysic Prover 依赖，包括 screen
-    echo "安装 Cysic Prover 依赖..."
+    # 安装 Cysic verifier 依赖，包括 screen
+    echo "安装 Cysic verifier 依赖..."
     apt install curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip screen -y
 
     echo "系统更新和依赖安装完成！"
 
-    # 设置 Cysic Prover
-    echo "开始设置 Cysic Prover..."
+    # 设置 Cysic verifier
+    echo "开始设置 Cysic verifier..."
     # 提示用户输入奖励地址
     echo "请输入你的奖励地址（格式如 0x...）："
     read -r REWARD_ADDRESS
@@ -61,15 +61,15 @@ function deploy_cysic_node() {
     fi
 
     # 下载并运行 setup_linux.sh
-    echo "下载并运行 Cysic Prover 安装脚本..."
+    echo "下载并运行 Cysic verifier 安装脚本..."
     curl -L https://github.com/cysic-labs/cysic-phase3/releases/download/v1.0.0/setup_linux.sh > ~/setup_linux.sh && bash ~/setup_linux.sh "$REWARD_ADDRESS"
 
-    # 使用 screen 启动 Cysic Prover，生成日志
-    echo "在 screen 会话 'cysic' 中启动 Cysic Prover..."
-    screen -S cysic -dm bash -c "cd ~/cysic-prover/ && bash start.sh > prover.log 2>&1"
+    # 使用 screen 启动 Cysic verifier，生成日志
+    echo "在 screen 会话 'cysic' 中启动 cysic-verifier..."
+    screen -S cysic -dm bash -c "cd ~/cysic-verifier/ && bash start.sh > verifier.log 2>&1"
 
-    echo "Cysic Prover 设置并启动完成！"
-    echo "日志文件生成在 ~/cysic-prover/prover.log"
+    echo "Cysic verifier 设置并启动完成！"
+    echo "日志文件生成在 ~/cysic-verifier/verifier.log"
     echo "使用 'screen -r cysic' 查看会话，或 'screen -ls' 列出会话。"
     echo "按任意键返回主菜单..."
     read -n 1
@@ -77,13 +77,13 @@ function deploy_cysic_node() {
 
 # 查看cysic节点日志函数
 function view_cysic_logs() {
-    # 日志文件路径，固定为 prover.log
-    LOG_FILE="$HOME/cysic-prover/prover.log"
+    # 日志文件路径，固定为 verifier.log
+    LOG_FILE="$HOME/cysic-verifier/verifier.log"
 
     # 检查日志文件是否存在
     if [ ! -f "$LOG_FILE" ]; then
         echo "错误：未找到日志文件 $LOG_FILE！"
-        echo "请确认Cysic节点是否已通过选项1部署，并检查 start.sh 是否生成 prover.log。"
+        echo "请确认Cysic节点是否已通过选项1部署，并检查 start.sh 是否生成 verifier.log。"
         echo "按任意键返回主菜单..."
         read -n 1
         return
@@ -93,7 +93,7 @@ function view_cysic_logs() {
     echo "按 Ctrl+C 返回主菜单"
     echo "================================================================"
 
-    # 使用 tail -f 实时查看 prover.log，不影响 screen 会话
+    # 使用 tail -f 实时查看 verifier.log，不影响 screen 会话
     tail -f "$LOG_FILE"
     # tail 会在用户按 Ctrl+C 后停止，然后返回主菜单
     echo "按任意键返回主菜单..."
